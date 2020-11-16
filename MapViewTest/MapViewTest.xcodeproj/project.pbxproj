@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,7 @@
 		D1A58C432559E13F00D9D99D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C412559E13F00D9D99D /* Main.storyboard */; };
 		D1A58C452559E14700D9D99D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C442559E14700D9D99D /* Assets.xcassets */; };
 		D1A58C482559E14700D9D99D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C462559E14700D9D99D /* LaunchScreen.storyboard */; };
+		F5C487752562F370003D1075 /* CustomAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C487742562F370003D1075 /* CustomAnnotationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		D1A58C442559E14700D9D99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D1A58C472559E14700D9D99D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D1A58C492559E14700D9D99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F5C487742562F370003D1075 /* CustomAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,7 +50,6 @@
 				7FCFCE20554AAE0381E43977 /* Pods-MapViewTest.debug.xcconfig */,
 				5540688A6FD3CE4D5142A009 /* Pods-MapViewTest.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -84,6 +85,7 @@
 				D1A58C3B2559E13F00D9D99D /* AppDelegate.swift */,
 				D1A58C3D2559E13F00D9D99D /* SceneDelegate.swift */,
 				D1A58C3F2559E13F00D9D99D /* ViewController.swift */,
+				F5C487742562F370003D1075 /* CustomAnnotationView.swift */,
 				D1A58C412559E13F00D9D99D /* Main.storyboard */,
 				D1A58C442559E14700D9D99D /* Assets.xcassets */,
 				D1A58C462559E14700D9D99D /* LaunchScreen.storyboard */,
@@ -209,6 +211,7 @@
 			files = (
 				D1A58C402559E13F00D9D99D /* ViewController.swift in Sources */,
 				D1A58C3C2559E13F00D9D99D /* AppDelegate.swift in Sources */,
+				F5C487752562F370003D1075 /* CustomAnnotationView.swift in Sources */,
 				D1A58C3E2559E13F00D9D99D /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
