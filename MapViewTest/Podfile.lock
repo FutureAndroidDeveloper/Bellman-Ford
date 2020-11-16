@@ -1,0 +1,16 @@
+PODS:
+  - SwiftGraph (3.0.0)
+
+DEPENDENCIES:
+  - SwiftGraph
+
+SPEC REPOS:
+  trunk:
+    - SwiftGraph
+
+SPEC CHECKSUMS:
+  SwiftGraph: 35298b3dab72887bc834b2e8d45295b870a87f42
+
+PODFILE CHECKSUM: 95cb6504c516396a267b9970c2a55f3c421293a5
+
+COCOAPODS: 1.9.1
