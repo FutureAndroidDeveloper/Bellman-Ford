@@ -18,10 +18,19 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Ye3-ky-AmR">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DSy-D7-MAL">
+                                <rect key="frame" x="164.5" y="637" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="printGraph:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fDy-8C-7jT"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Ye3-ky-AmR" secondAttribute="trailing" id="0xF-Ar-28D"/>
+                            <constraint firstItem="DSy-D7-MAL" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="8f1-ZM-hrE"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="DSy-D7-MAL" secondAttribute="bottom" id="Ee4-RK-Zoh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Ye3-ky-AmR" secondAttribute="bottom" constant="50" id="QF8-ju-nCc"/>
                             <constraint firstItem="Ye3-ky-AmR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="YqJ-uS-6WC"/>
                             <constraint firstItem="Ye3-ky-AmR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="hlp-lA-Wvi"/>

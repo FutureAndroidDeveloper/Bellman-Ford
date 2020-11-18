@@ -29,7 +29,7 @@ class CustomAnnotationView: MKAnnotationView {
         fatalError("init(coder:) not implemented!")
     }
 
-    public var number: UInt32 = 0 {
+    public var number: Int = 0 {
         didSet {
             self.label.text = String(number)
         }
