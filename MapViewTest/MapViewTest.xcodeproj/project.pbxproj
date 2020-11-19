@@ -14,6 +14,9 @@
 		D1A58C432559E13F00D9D99D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C412559E13F00D9D99D /* Main.storyboard */; };
 		D1A58C452559E14700D9D99D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C442559E14700D9D99D /* Assets.xcassets */; };
 		D1A58C482559E14700D9D99D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C462559E14700D9D99D /* LaunchScreen.storyboard */; };
+		F55A03302566BF8100DF94FB /* VertixAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55A032F2566BF8100DF94FB /* VertixAnnotation.swift */; };
+		F59EF6C32565906200306E7E /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59EF6C22565906200306E7E /* FileManager.swift */; };
+		F59EF6C725659BE000306E7E /* MapVertix.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59EF6C625659BE000306E7E /* MapVertix.swift */; };
 		F5C487752562F370003D1075 /* CustomAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C487742562F370003D1075 /* CustomAnnotationView.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +32,9 @@
 		D1A58C442559E14700D9D99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D1A58C472559E14700D9D99D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D1A58C492559E14700D9D99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F55A032F2566BF8100DF94FB /* VertixAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VertixAnnotation.swift; sourceTree = "<group>"; };
+		F59EF6C22565906200306E7E /* FileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
+		F59EF6C625659BE000306E7E /* MapVertix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVertix.swift; sourceTree = "<group>"; };
 		F5C487742562F370003D1075 /* CustomAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,16 +88,35 @@
 		D1A58C3A2559E13F00D9D99D /* MapViewTest */ = {
 			isa = PBXGroup;
 			children = (
+				F55A032E2566BF6B00DF94FB /* Annotation */,
+				F59EF6C12565904800306E7E /* FileManager */,
 				D1A58C3B2559E13F00D9D99D /* AppDelegate.swift */,
 				D1A58C3D2559E13F00D9D99D /* SceneDelegate.swift */,
 				D1A58C3F2559E13F00D9D99D /* ViewController.swift */,
-				F5C487742562F370003D1075 /* CustomAnnotationView.swift */,
+				F59EF6C625659BE000306E7E /* MapVertix.swift */,
 				D1A58C412559E13F00D9D99D /* Main.storyboard */,
 				D1A58C442559E14700D9D99D /* Assets.xcassets */,
 				D1A58C462559E14700D9D99D /* LaunchScreen.storyboard */,
 				D1A58C492559E14700D9D99D /* Info.plist */,
 			);
 			path = MapViewTest;
+			sourceTree = "<group>";
+		};
+		F55A032E2566BF6B00DF94FB /* Annotation */ = {
+			isa = PBXGroup;
+			children = (
+				F5C487742562F370003D1075 /* CustomAnnotationView.swift */,
+				F55A032F2566BF8100DF94FB /* VertixAnnotation.swift */,
+			);
+			path = Annotation;
+			sourceTree = "<group>";
+		};
+		F59EF6C12565904800306E7E /* FileManager */ = {
+			isa = PBXGroup;
+			children = (
+				F59EF6C22565906200306E7E /* FileManager.swift */,
+			);
+			path = FileManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +234,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F59EF6C725659BE000306E7E /* MapVertix.swift in Sources */,
+				F59EF6C32565906200306E7E /* FileManager.swift in Sources */,
+				F55A03302566BF8100DF94FB /* VertixAnnotation.swift in Sources */,
 				D1A58C402559E13F00D9D99D /* ViewController.swift in Sources */,
 				D1A58C3C2559E13F00D9D99D /* AppDelegate.swift in Sources */,
 				F5C487752562F370003D1075 /* CustomAnnotationView.swift in Sources */,

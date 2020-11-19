@@ -12,6 +12,21 @@ extension CLLocationCoordinate2D: Equatable {
     }
 }
 
+extension CLLocation {
+    
+    /// Get distance between two points
+    ///
+    /// - Parameters:
+    ///   - from: first point
+    ///   - to: second point
+    /// - Returns: the distance in meters
+    class func distance(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> CLLocationDistance {
+        let from = CLLocation(latitude: from.latitude, longitude: from.longitude)
+        let to = CLLocation(latitude: to.latitude, longitude: to.longitude)
+        return from.distance(from: to)
+    }
+}
+
 import UIKit
 import MapKit
 import SwiftGraph
@@ -20,17 +35,16 @@ class ViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     
     private var index: Int = 0
-    private var lastCoordinate: CLLocationCoordinate2D?
     
     private var lpgr: UILongPressGestureRecognizer!
     
-    private var activeVertix: MKAnnotation?
+    private var activeVertix: MapVertix?
     
-    private var graph = WeightedGraph<String, Int>()
+    private var graph = WeightedGraph<MapVertix, Double>()
     
     var vertices: [String] = []
     
-    var existingVertix: MKAnnotation?
+    var existingVertix: MapVertix?
     var isExistingVertixTapped: Bool = false
     
     override func viewDidLoad() {
@@ -49,33 +63,31 @@ class ViewController: UIViewController {
     }
     
     private func addAnnotation(on coordinate: CLLocationCoordinate2D) {
-        if let newCoordinate = existingVertix?.coordinate, newCoordinate == coordinate {
-            if let from = activeVertix?.title, let to = existingVertix?.title {
-                createEdge(from: from ?? String(), to: to ?? String())
-            }
-            let myLastCoordinate = activeVertix?.coordinate
-            addLine(from: myLastCoordinate!, to: newCoordinate)
+        // если нажатие произошло на активную вершину
+        if let activeCoordinate = activeVertix?.coordinate, activeCoordinate == coordinate {
             return
         }
         
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        annotation.title = "\(index)"
-        annotation.subtitle = "subtitle \(index)"
-        mapView.addAnnotation(annotation)
-        createVertix()
-        
-        if let myLastCoordinate = activeVertix?.coordinate {
-            guard let title = activeVertix?.title else { return }
-            if let number = title {
-                createEdge(from: number, to: annotation.title ?? String())
+        // если дбавление происходит на уже существующую вершину
+        if let existingCoordinate = existingVertix?.coordinate, existingCoordinate == coordinate {
+            if let from = activeVertix, let to = existingVertix {
+                createEdge(from: from, to: to)
+                addLine(from: from.coordinate, to: to.coordinate)
             }
-            addLine(from: myLastCoordinate, to: coordinate)
-        } else {
-            activeVertix = annotation
+            return
         }
-        lastCoordinate = coordinate
         
+        let vertix = createVertix(on: coordinate)
+        let annotation = VertixAnnotation(vertix: vertix)
+        mapView.addAnnotation(annotation)
+        index += 1
+        
+        if let activeVertix = activeVertix {
+            createEdge(from: activeVertix, to: vertix)
+            addLine(from: activeVertix.coordinate, to: vertix.coordinate)
+        } else {
+            activeVertix = vertix
+        }
     }
     
     private func addLine(from begin: CLLocationCoordinate2D, to end: CLLocationCoordinate2D) {
@@ -87,29 +99,39 @@ class ViewController: UIViewController {
         
     }
     
-    private func createVertix() {
-        let newVertix = "\(index)"
-        let _ = graph.addVertex(newVertix)
+    private func createVertix(on coordinate: CLLocationCoordinate2D) -> MapVertix {
+        let newVertix = MapVertix(number: index, coordinate: coordinate)
+        let vertixIndex = graph.addVertex(newVertix)
+        return graph.vertexAtIndex(vertixIndex)
     }
     
-    private func createEdge(from begin: String, to end: String) {
-        graph.addEdge(from: begin, to: end, weight: 1)
+    private func createEdge(from begin: MapVertix, to end: MapVertix) {
+        let a = begin.coordinate
+        let b = end.coordinate
+        let w = CLLocation.distance(from: a, to: b)
+        graph.addEdge(from: begin, to: end, weight: w)
     }
     
     
     @IBAction func printGraph(_ sender: Any) {
-        print(graph)
-        print(graph.dijkstra(root: 0, startDistance: 0))
-        // it works
-
-        let (distances, pathDict) = graph.dijkstra(root: 0, startDistance: 0)
-        let shortestPath = pathDictToPath(from: 0, to: 4, pathDict: pathDict)
-
-        print(shortestPath)
-        let shortestWeight = shortestPath.reduce(0, { $0 + $1.weight })
-        print(shortestWeight)
+        //        print(graph)
+        //        print(graph.dijkstra(root: 0, startDistance: 0))
+        //        // it works
+        //
+        //        let (distances, pathDict) = graph.dijkstra(root: 0, startDistance: 0)
+        //        let shortestPath = pathDictToPath(from: 0, to: 4, pathDict: pathDict)
+        //
+        //        print(shortestPath)
+        //        let shortestWeight = shortestPath.reduce(0, { $0 + $1.weight })
+        //        print(shortestWeight)
+        saveGraphToFile()
     }
     
+    private func saveGraphToFile() {
+        DiskGraphFileManager().saveGraph()
+        print("k: \(graph)")
+        print(graph.edgeList())
+    }
 }
 
 extension ViewController: UIGestureRecognizerDelegate {
@@ -118,25 +140,23 @@ extension ViewController: UIGestureRecognizerDelegate {
     }
     
     @objc func handleLongPress(gestureReconizer: UILongPressGestureRecognizer) {
-        isExistingVertixTapped = false
-        if gestureReconizer.state != .ended {
-            var touchLocation = gestureReconizer.location(in: mapView)
+        switch gestureReconizer.state {
+        case .began:
+            var pressCoordinate: CLLocationCoordinate2D
+            let touchLocation = gestureReconizer.location(in: mapView)
+            let tappedView = mapView.hitTest(touchLocation, with: nil)
             
-            let loc = gestureReconizer.location(in: mapView)
-            let ccc = mapView.hitTest(loc, with: nil)
-        
-            if let cac = ccc as? MKAnnotationView {
-                existingVertix = cac.annotation
-                touchLocation = mapView.convert(cac.annotation!.coordinate, toPointTo: mapView)
+            // если нажатие попало на уже созданную вершину
+            if let markerView = tappedView as? CustomAnnotationView,
+                let annotation = markerView.annotation as? VertixAnnotation {
+                existingVertix = annotation.vertix
+                pressCoordinate = annotation.vertix.coordinate
+            } else {
+                pressCoordinate = mapView.convert(touchLocation, toCoordinateFrom: mapView)
             }
-            
-            let locationCoordinate = mapView.convert(touchLocation, toCoordinateFrom: mapView)
-            addAnnotation(on: locationCoordinate)
-            return
-        }
-        if gestureReconizer.state != .began {
-            
-            return
+            addAnnotation(on: pressCoordinate)
+        default:
+            break
         }
     }
 }
@@ -144,6 +164,7 @@ extension ViewController: UIGestureRecognizerDelegate {
 extension ViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolyline {
+            // настройка линии
             let polylineRender = MKPolylineRenderer(overlay: overlay)
             polylineRender.strokeColor = .red
             polylineRender.lineWidth = 5
@@ -153,20 +174,20 @@ extension ViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        activeVertix = view.annotation
+        guard let annotation = view.annotation as? VertixAnnotation else { return }
+        activeVertix = annotation.vertix
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard annotation is MKPointAnnotation else { return nil }
-        let customAnnotationView = self.customAnnotationView(in: mapView, for: annotation)
-        customAnnotationView.number = index
-        index += 1
-        return customAnnotationView
+        guard let vertixAnnotation = annotation as? VertixAnnotation else { return nil }
+        let view = customAnnotationView(in: mapView, for: vertixAnnotation)
+        view.number = vertixAnnotation.vertix.number
+        return view
     }
     
     private func customAnnotationView(in mapView: MKMapView, for annotation: MKAnnotation) -> CustomAnnotationView {
-        let identifier = "CustomAnnotationViewID"
-
+        let identifier = MKMapViewDefaultAnnotationViewReuseIdentifier
+        
         if let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? CustomAnnotationView {
             annotationView.annotation = annotation
             return annotationView

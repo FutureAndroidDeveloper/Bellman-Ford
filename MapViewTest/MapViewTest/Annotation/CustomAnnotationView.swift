@@ -9,7 +9,6 @@
 import UIKit
 import MapKit
 
-
 class CustomAnnotationView: MKAnnotationView {
     private let annotationFrame = CGRect(x: 0, y: 0, width: 40, height: 40)
     private let label: UILabel
@@ -33,6 +32,11 @@ class CustomAnnotationView: MKAnnotationView {
         didSet {
             self.label.text = String(number)
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        label.text = nil
     }
 
     override func draw(_ rect: CGRect) {
