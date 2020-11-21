@@ -90,13 +90,14 @@ class ViewController: UIViewController {
         }
     }
     
+    private func drawVertix(_ vertix: MapVertix) {
+        let annotation = VertixAnnotation(vertix: vertix)
+        mapView.addAnnotation(annotation)
+    }
+    
     private func addLine(from begin: CLLocationCoordinate2D, to end: CLLocationCoordinate2D) {
         let line = MKPolyline(coordinates: [begin, end], count: 2)
         mapView.addOverlay(line)
-    }
-    
-    private func saveGraph() {
-        
     }
     
     private func createVertix(on coordinate: CLLocationCoordinate2D) -> MapVertix {
@@ -112,23 +113,35 @@ class ViewController: UIViewController {
         graph.addEdge(from: begin, to: end, weight: w)
     }
     
+    @IBAction func loadGraphTapped(_ sender: Any) {
+        let fileManager = DiskGraphFileManager<WeightedGraph<MapVertix, Double>>()
+        guard let loadedGraph = fileManager.loadGraph() else {
+            print("Cant load graph from file")
+            return
+        }
+        graph = loadedGraph
+        drawGraph()
+    }
     
-    @IBAction func printGraph(_ sender: Any) {
-        //        print(graph)
-        //        print(graph.dijkstra(root: 0, startDistance: 0))
-        //        // it works
-        //
-        //        let (distances, pathDict) = graph.dijkstra(root: 0, startDistance: 0)
-        //        let shortestPath = pathDictToPath(from: 0, to: 4, pathDict: pathDict)
-        //
-        //        print(shortestPath)
-        //        let shortestWeight = shortestPath.reduce(0, { $0 + $1.weight })
-        //        print(shortestWeight)
+    private func drawGraph() {
+        // отрисовать вершины графа
+        graph.vertices.forEach(drawVertix(_:))
+        
+        // отрисовать ребра графа
+        graph.edgeList().forEach {
+            let start = graph.vertexAtIndex($0.u)
+            let end = graph.vertexAtIndex($0.v)
+            addLine(from: start.coordinate, to: end.coordinate)
+        }
+    }
+    
+    @IBAction func saveGraphTapped(_ sender: Any) {
         saveGraphToFile()
     }
     
     private func saveGraphToFile() {
-        DiskGraphFileManager().saveGraph()
+        DiskGraphFileManager().save(graph: graph)
+        print()
         print("k: \(graph)")
         print(graph.edgeList())
     }

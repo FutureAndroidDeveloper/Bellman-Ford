@@ -7,42 +7,40 @@
 //
 
 import Foundation
+import SwiftGraph
 
 protocol GraphFileManager {
-    func saveGraph()
-    func loadGraph()
+    associatedtype Graph
+    func save(graph: Graph)
+    func loadGraph() -> Graph?
 }
 
-class DiskGraphFileManager: GraphFileManager {
-    func saveGraph() {
+class DiskGraphFileManager<GraphType: Graph>: GraphFileManager {
+    typealias Graph = GraphType
+    
+    func save(graph: GraphType) {
         let filename = getDocumentsDirectory().appendingPathComponent("output.txt")
         print(filename)
-        let ha = ["17.1, 26.8", "17.1, 26.8", "17.1, 26.8"]
-        
-        
-        let data = stringArrayToNSData(array: ha)
-        let a = Data(referencing: data)
-        FileManager.default.createFile(atPath: filename.path, contents: a, attributes: nil)
-    }
-
-    func stringArrayToNSData(array: [String]) -> NSData {
-        let data = NSMutableData()
-        let terminator = [0]
-        for string in array {
-            if let encodedString = string.data(using: .utf8) {
-                data.append(encodedString)
-                data.append(terminator, length: 1)
-            }
-            else {
-                NSLog("Cannot encode string \"\(string)\"")
-            }
+        do {
+            let graphData = try PropertyListEncoder().encode(graph)
+            try graphData.write(to: filename)
+        } catch let error {
+            print(error)
         }
-        return data
     }
-
     
-    func loadGraph() {
-        //
+    func loadGraph() -> GraphType? {
+        var graph: GraphType?
+        let filename = getDocumentsDirectory().appendingPathComponent("output.txt")
+        
+        do {
+            let graphData = try Data(contentsOf: filename)
+            graph = try PropertyListDecoder().decode(GraphType.self, from: graphData)
+        } catch let error {
+            print(error)
+        }
+        
+        return graph
     }
     
     private func getDocumentsDirectory() -> URL {
