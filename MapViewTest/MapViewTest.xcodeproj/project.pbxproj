@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		420E6694602B585E241C09D5 /* Pods_MapViewTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D7E908D953580E206BEB09D /* Pods_MapViewTest.framework */; };
+		D1090D43257BBA0E00B72FC1 /* LocationCoordinate2D+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1090D42257BBA0E00B72FC1 /* LocationCoordinate2D+Equatable.swift */; };
+		D1090D45257BBA5600B72FC1 /* CLLocation+distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1090D44257BBA5600B72FC1 /* CLLocation+distance.swift */; };
+		D1090D47257BBDB900B72FC1 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1090D46257BBDB900B72FC1 /* ViewModel.swift */; };
+		D1090D4A257BC5E900B72FC1 /* MapEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1090D49257BC5E900B72FC1 /* MapEdge.swift */; };
+		D168CC3B257E249700779286 /* ViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D168CC3A257E249700779286 /* ViewDelegate.swift */; };
 		D1A58C3C2559E13F00D9D99D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A58C3B2559E13F00D9D99D /* AppDelegate.swift */; };
 		D1A58C3E2559E13F00D9D99D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A58C3D2559E13F00D9D99D /* SceneDelegate.swift */; };
 		D1A58C402559E13F00D9D99D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A58C3F2559E13F00D9D99D /* ViewController.swift */; };
@@ -24,6 +29,11 @@
 		3D7E908D953580E206BEB09D /* Pods_MapViewTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapViewTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5540688A6FD3CE4D5142A009 /* Pods-MapViewTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapViewTest.release.xcconfig"; path = "Target Support Files/Pods-MapViewTest/Pods-MapViewTest.release.xcconfig"; sourceTree = "<group>"; };
 		7FCFCE20554AAE0381E43977 /* Pods-MapViewTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapViewTest.debug.xcconfig"; path = "Target Support Files/Pods-MapViewTest/Pods-MapViewTest.debug.xcconfig"; sourceTree = "<group>"; };
+		D1090D42257BBA0E00B72FC1 /* LocationCoordinate2D+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocationCoordinate2D+Equatable.swift"; sourceTree = "<group>"; };
+		D1090D44257BBA5600B72FC1 /* CLLocation+distance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocation+distance.swift"; sourceTree = "<group>"; };
+		D1090D46257BBDB900B72FC1 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		D1090D49257BC5E900B72FC1 /* MapEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEdge.swift; sourceTree = "<group>"; };
+		D168CC3A257E249700779286 /* ViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDelegate.swift; sourceTree = "<group>"; };
 		D1A58C382559E13F00D9D99D /* MapViewTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapViewTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1A58C3B2559E13F00D9D99D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D1A58C3D2559E13F00D9D99D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -67,6 +77,34 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D1090D41257BB9DA00B72FC1 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				D1090D42257BBA0E00B72FC1 /* LocationCoordinate2D+Equatable.swift */,
+				D1090D44257BBA5600B72FC1 /* CLLocation+distance.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		D1090D48257BC5D000B72FC1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D1090D49257BC5E900B72FC1 /* MapEdge.swift */,
+				F59EF6C625659BE000306E7E /* MapVertix.swift */,
+				F55A032E2566BF6B00DF94FB /* Annotation */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		D168CC39257E246F00779286 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				D1090D46257BBDB900B72FC1 /* ViewModel.swift */,
+				D168CC3A257E249700779286 /* ViewDelegate.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		D1A58C2F2559E13F00D9D99D = {
 			isa = PBXGroup;
 			children = (
@@ -88,12 +126,13 @@
 		D1A58C3A2559E13F00D9D99D /* MapViewTest */ = {
 			isa = PBXGroup;
 			children = (
-				F55A032E2566BF6B00DF94FB /* Annotation */,
+				D168CC39257E246F00779286 /* ViewModel */,
+				D1090D48257BC5D000B72FC1 /* Model */,
+				D1090D41257BB9DA00B72FC1 /* Extension */,
 				F59EF6C12565904800306E7E /* FileManager */,
 				D1A58C3B2559E13F00D9D99D /* AppDelegate.swift */,
 				D1A58C3D2559E13F00D9D99D /* SceneDelegate.swift */,
 				D1A58C3F2559E13F00D9D99D /* ViewController.swift */,
-				F59EF6C625659BE000306E7E /* MapVertix.swift */,
 				D1A58C412559E13F00D9D99D /* Main.storyboard */,
 				D1A58C442559E14700D9D99D /* Assets.xcassets */,
 				D1A58C462559E14700D9D99D /* LaunchScreen.storyboard */,
@@ -234,13 +273,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1090D47257BBDB900B72FC1 /* ViewModel.swift in Sources */,
+				D1090D45257BBA5600B72FC1 /* CLLocation+distance.swift in Sources */,
 				F59EF6C725659BE000306E7E /* MapVertix.swift in Sources */,
 				F59EF6C32565906200306E7E /* FileManager.swift in Sources */,
 				F55A03302566BF8100DF94FB /* VertixAnnotation.swift in Sources */,
 				D1A58C402559E13F00D9D99D /* ViewController.swift in Sources */,
 				D1A58C3C2559E13F00D9D99D /* AppDelegate.swift in Sources */,
+				D1090D43257BBA0E00B72FC1 /* LocationCoordinate2D+Equatable.swift in Sources */,
+				D1090D4A257BC5E900B72FC1 /* MapEdge.swift in Sources */,
 				F5C487752562F370003D1075 /* CustomAnnotationView.swift in Sources */,
 				D1A58C3E2559E13F00D9D99D /* SceneDelegate.swift in Sources */,
+				D168CC3B257E249700779286 /* ViewDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

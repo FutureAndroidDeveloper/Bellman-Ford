@@ -6,46 +6,20 @@
 //  Copyright © 2020 Kirill Klimenkov. All rights reserved.
 //
 
-extension CLLocationCoordinate2D: Equatable {
-    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-        return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
-    }
-}
-
-extension CLLocation {
-    
-    /// Get distance between two points
-    ///
-    /// - Parameters:
-    ///   - from: first point
-    ///   - to: second point
-    /// - Returns: the distance in meters
-    class func distance(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> CLLocationDistance {
-        let from = CLLocation(latitude: from.latitude, longitude: from.longitude)
-        let to = CLLocation(latitude: to.latitude, longitude: to.longitude)
-        return from.distance(from: to)
-    }
-}
-
 import UIKit
 import MapKit
-import SwiftGraph
 
 class ViewController: UIViewController {
-    @IBOutlet weak var mapView: MKMapView!
-    
-    private var index: Int = 0
-    
+    @IBOutlet private weak var mapView: MKMapView!
     private var lpgr: UILongPressGestureRecognizer!
+        
+    private var viewModel = ViewModel()
     
     private var activeVertix: MapVertix?
+    private var existingVertix: MapVertix?
     
-    private var graph = WeightedGraph<MapVertix, Double>()
-    
-    var vertices: [String] = []
-    
-    var existingVertix: MapVertix?
-    var isExistingVertixTapped: Bool = false
+    var pathColor: UIColor = .red
+    var pathAplpha: CGFloat = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,6 +32,11 @@ class ViewController: UIViewController {
         lpgr.minimumPressDuration = 0.5
         lpgr.delaysTouchesBegan = true
         lpgr.delegate = self
+        
+        pathColor = .red
+        
+        viewModel.viewDelegate = self
+        
         mapView.delegate = self
         mapView.addGestureRecognizer(lpgr)
     }
@@ -71,20 +50,18 @@ class ViewController: UIViewController {
         // если дбавление происходит на уже существующую вершину
         if let existingCoordinate = existingVertix?.coordinate, existingCoordinate == coordinate {
             if let from = activeVertix, let to = existingVertix {
-                createEdge(from: from, to: to)
-                addLine(from: from.coordinate, to: to.coordinate)
+                let edge = viewModel.createEdge(from: from, to: to)
+                drawEdge(edge)
             }
             return
         }
         
-        let vertix = createVertix(on: coordinate)
-        let annotation = VertixAnnotation(vertix: vertix)
-        mapView.addAnnotation(annotation)
-        index += 1
+        let vertix = viewModel.createVertix(on: coordinate)
+        drawVertix(vertix)
         
         if let activeVertix = activeVertix {
-            createEdge(from: activeVertix, to: vertix)
-            addLine(from: activeVertix.coordinate, to: vertix.coordinate)
+            let edge = viewModel.createEdge(from: activeVertix, to: vertix)
+            drawEdge(edge)
         } else {
             activeVertix = vertix
         }
@@ -95,58 +72,43 @@ class ViewController: UIViewController {
         mapView.addAnnotation(annotation)
     }
     
-    private func addLine(from begin: CLLocationCoordinate2D, to end: CLLocationCoordinate2D) {
-        let line = MKPolyline(coordinates: [begin, end], count: 2)
+    private func drawEdge(_ edge: MapEdge) {
+        let line = MKPolyline(coordinates: edge.coordinates, count: edge.coordinates.count)
         mapView.addOverlay(line)
     }
     
-    private func createVertix(on coordinate: CLLocationCoordinate2D) -> MapVertix {
-        let newVertix = MapVertix(number: index, coordinate: coordinate)
-        let vertixIndex = graph.addVertex(newVertix)
-        return graph.vertexAtIndex(vertixIndex)
-    }
-    
-    private func createEdge(from begin: MapVertix, to end: MapVertix) {
-        let a = begin.coordinate
-        let b = end.coordinate
-        let w = CLLocation.distance(from: a, to: b)
-        graph.addEdge(from: begin, to: end, weight: w)
-    }
-    
-    @IBAction func loadGraphTapped(_ sender: Any) {
-        let fileManager = DiskGraphFileManager<WeightedGraph<MapVertix, Double>>()
-        guard let loadedGraph = fileManager.loadGraph() else {
-            print("Cant load graph from file")
+    // MARK: - IBAction
+    @IBAction func findPathTapped(_ sender: Any) {
+        guard let srcVertix = activeVertix else {
             return
         }
-        graph = loadedGraph
-        drawGraph()
+        viewModel.bellmanFord(src: srcVertix)
     }
     
-    private func drawGraph() {
-        // отрисовать вершины графа
-        graph.vertices.forEach(drawVertix(_:))
-        
-        // отрисовать ребра графа
-        graph.edgeList().forEach {
-            let start = graph.vertexAtIndex($0.u)
-            let end = graph.vertexAtIndex($0.v)
-            addLine(from: start.coordinate, to: end.coordinate)
-        }
+    
+    @IBAction func loadGraphTapped(_ sender: Any) {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.removeOverlays(mapView.overlays)
+        viewModel.loadGraphFromFile()
     }
     
     @IBAction func saveGraphTapped(_ sender: Any) {
-        saveGraphToFile()
-    }
-    
-    private func saveGraphToFile() {
-        DiskGraphFileManager().save(graph: graph)
-        print()
-        print("k: \(graph)")
-        print(graph.edgeList())
+        viewModel.saveGraphToFile()
     }
 }
 
+// MARK: - ViewDelegate
+extension ViewController: ViewDelegate {
+    func didGetNewVertix(_ vertix: MapVertix) {
+        drawVertix(vertix)
+    }
+    
+    func didGetNewEdge(_ edge: MapEdge) {
+        drawEdge(edge)
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
 extension ViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
@@ -174,13 +136,15 @@ extension ViewController: UIGestureRecognizerDelegate {
     }
 }
 
+// MARK: - MKMapViewDelegate
 extension ViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolyline {
             // настройка линии
             let polylineRender = MKPolylineRenderer(overlay: overlay)
-            polylineRender.strokeColor = .red
+            polylineRender.strokeColor = pathColor
             polylineRender.lineWidth = 5
+            polylineRender.alpha = pathAplpha
             return polylineRender
         }
         return MKOverlayRenderer(overlay: overlay)
