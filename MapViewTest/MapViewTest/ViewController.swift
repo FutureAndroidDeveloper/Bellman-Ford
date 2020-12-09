@@ -21,6 +21,18 @@ class ViewController: UIViewController {
     var pathColor: UIColor = .red
     var pathAplpha: CGFloat = 1
     
+    var isSelectingMode = false
+    var vertixColor = UIColor.blue
+    
+    var mapPath: MapPath?
+    var selectedAnnotations: [MapVertix] = []
+    
+    let startColor: UIColor = .red
+    var startVertix: MapVertix?
+    
+    let endColor: UIColor = .green
+    var endVertix: MapVertix?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setMapview()
@@ -79,10 +91,18 @@ class ViewController: UIViewController {
     
     // MARK: - IBAction
     @IBAction func findPathTapped(_ sender: Any) {
-        guard let srcVertix = activeVertix else {
+        guard let from = startVertix, let to = endVertix else {
+            if !isSelectingMode {
+                mapView.selectedAnnotations.forEach { mapView.deselectAnnotation($0, animated: true) }
+            }
+            isSelectingMode = true
             return
         }
-        viewModel.bellmanFord(src: srcVertix)
+        mapView.removeAnnotations(mapView.annotations)
+                mapView.removeOverlays(mapView.overlays)
+        viewModel.bellmanFord(src: from, destination: to)
+    
+        vertixColor = .green
     }
     
     
@@ -151,8 +171,22 @@ extension ViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        guard let annotation = view.annotation as? VertixAnnotation else { return }
+        guard
+            let view = view as? CustomAnnotationView,
+            let annotation = view.annotation as? VertixAnnotation else {
+                return
+        }
         activeVertix = annotation.vertix
+        
+        if isSelectingMode {
+            if let _ = startVertix {
+                endVertix = annotation.vertix
+                view.color = endColor
+            } else {
+                startVertix = annotation.vertix
+                view.color = startColor
+            }
+        }
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {

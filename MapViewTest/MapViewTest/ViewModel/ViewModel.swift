@@ -28,7 +28,7 @@ class ViewModel {
     
     func createEdge(from begin: MapVertix, to end: MapVertix) -> MapEdge {
         guard let beginIndex = graph.indexOfVertex(begin), let endIndex = graph.indexOfVertex(end) else {
-//            return nil
+            //            return nil
             fatalError("Check creation of MapVertix")
         }
         let distance = CLLocation.distance(from: begin.coordinate, to: end.coordinate)
@@ -71,65 +71,23 @@ class ViewModel {
         print(graph.edgeList())
     }
     
-    func bellmanFord(src: MapVertix) {
-            guard let srcIndex = graph.indexOfVertex(src) else {
-                return
-            }
-            // init distances from src to all other vertices  as INFINITY
-            var dist = graph.vertices.map { _ in Double.infinity }
-            dist[srcIndex] = 0
-            
-            // Relax all edges
-            for _ in (0..<graph.vertices.count - 1) {
-                // Update dist value and parent index of the adjacent vertices of
-                // the picked vertex. Consider only those vertices which are still in
-                // queue
-                for edge in graph.edgeList() {
-                    if dist[edge.u] != Double.infinity && dist[edge.u] + edge.weight < dist[edge.v] {
-                        dist[edge.v] = dist[edge.u] + edge.weight
-                    }
-                }
-            }
-            
-            // Step 3: check for negative-weight cycles. The above step
-            // guarantees shortest distances if graph doesn't contain
-            // negative weight cycle. If we get a shorter path, then there
-            // is a cycle.
-            for edge in graph.edgeList() {
-                if dist[edge.u] != Double.infinity && dist[edge.u] + edge.weight < dist[edge.v] {
-                    print("Graph contains negative weight cycle")
-                    return
-                }
-            }
-            
-    //        print(dist)
-            
-            print("Vertex Distance from Source")
-            for i in (0..<graph.vertices.count) {
-                print("\(i)        \(dist[i])")
-            }
-            
-            print()
-            
-            print(graph.dijkstra(root: src, startDistance: 0))
-            
-            let dijkstra = graph.dijkstra(root: src, startDistance: 0)
-            let path = pathDictToPath(from: 0, to: 3, pathDict: dijkstra.1)
-            
-            let pathColor = UIColor.blue
-            let pathAplpha = 0.8
-            
-            // draw shotest path
-            path.forEach { edge in
-                let start = graph.vertexAtIndex(edge.u)
-                let end = graph.vertexAtIndex(edge.v)
-                // TODO: call viewdelegate
-
-                let mapEdge = MapEdge(startCoordinate: start.coordinate,
-                                      endCoordinate: end.coordinate,
-                                      weight: edge.weight)
-                self.viewDelegate?.didGetNewEdge(mapEdge)
-            }
-            
+    func bellmanFord(src: MapVertix, destination: MapVertix) {
+        let pathDict = graph.bellmanFord(source: src, destination: destination)
+        let path = graph.pathDictToPath(from: src, to: destination, pathDict: pathDict)
+        
+        let pathColor = UIColor.blue
+        let pathAplpha = 0.8
+        
+        // draw shotest path
+        path.forEach { edge in
+            let start = graph.vertexAtIndex(edge.u)
+            let end = graph.vertexAtIndex(edge.v)
+            let mapEdge = MapEdge(startCoordinate: start.coordinate,
+                                  endCoordinate: end.coordinate,
+                                  weight: edge.weight)
+            self.viewDelegate?.didGetNewVertix(start)
+            self.viewDelegate?.didGetNewVertix(end)
+            self.viewDelegate?.didGetNewEdge(mapEdge)
         }
+    }
 }
