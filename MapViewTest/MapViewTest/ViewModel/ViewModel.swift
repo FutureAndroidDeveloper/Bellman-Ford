@@ -38,6 +38,54 @@ class ViewModel {
         return mapEdge
     }
     
+    func findAvailablePaths(from: MapVertix, to: MapVertix) {
+        let paths = findAllPaths(from, to)
+        viewDelegate?.didChangeEdgeColor(.blue)
+        paths.forEach(showPath(_:))
+    }
+        
+    // Создать массив для хранения путей
+    var path = [MapVertix]()
+    
+    // Печатает все пути от 's' до 'd'
+    private func findAllPaths(_ from: MapVertix, _ to: MapVertix) -> [[WeightedEdge<Double>]] {
+        // Отметить все вершины как не посещенные
+        var visited = [Int: Bool]()
+        graph.vertices.forEach { visited[$0.number] = false }
+        
+        // Рекурсивный вызов вспомогательной функции поиска всех путей
+        printAllPathsUtil(u: from, d: to, visited: &visited) { newVertixPath in
+            // create edge and draw it
+            WeightedEdge<Double>.init(u: <#T##Int#>, v: <#T##Int#>, directed: false, weight: <#T##Double#>)
+        }
+    }
+    
+    private func printAllPathsUtil(u: MapVertix, d: MapVertix, visited: inout [Int: Bool], didFind: (([MapVertix]) -> Void)) {
+        // Пометить текущий узел как посещенный и сохранить в path
+        visited[graph.indexOfVertex(u)!] = true
+        path.append(u)
+
+        // Если текущая вершина совпадает с точкой назначения, то
+        // print(current path[])
+        if u == d {
+            didFind(path)
+        } else {
+            // Если текущая вершина не является пунктом назначения
+            // Повторить для всех вершин, смежных с этой вершиной
+            for vertix in graph.neighborsForVertex(u)! {
+                if !visited[graph.indexOfVertex(vertix)!]! {
+                    printAllPathsUtil(u: vertix, d: d)
+                }
+            }
+        }
+
+        // Удалить текущую вершину из path[] и пометить ее как непосещенную
+        path.removeLast()
+//        path.pop()
+        visited[graph.indexOfVertex(u)!] = false
+    }
+
+    
     func loadGraphFromFile() {
         let fileManager = DiskGraphFileManager<WeightedGraph<MapVertix, Double>>()
         guard let loadedGraph = fileManager.loadGraph() else {
@@ -74,11 +122,11 @@ class ViewModel {
     func bellmanFord(src: MapVertix, destination: MapVertix) {
         let pathDict = graph.bellmanFord(source: src, destination: destination)
         let path = graph.pathDictToPath(from: src, to: destination, pathDict: pathDict)
-        
-        let pathColor = UIColor.blue
-        let pathAplpha = 0.8
-        
-        // draw shotest path
+        viewDelegate?.didChangeEdgeColor(.yellow)
+        showPath(path)
+    }
+    
+    private func showPath(_ path: [WeightedEdge<Double>]) {
         path.forEach { edge in
             let start = graph.vertexAtIndex(edge.u)
             let end = graph.vertexAtIndex(edge.v)

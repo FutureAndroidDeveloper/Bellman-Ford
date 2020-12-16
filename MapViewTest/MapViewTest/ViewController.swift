@@ -98,11 +98,10 @@ class ViewController: UIViewController {
             isSelectingMode = true
             return
         }
-        mapView.removeAnnotations(mapView.annotations)
-                mapView.removeOverlays(mapView.overlays)
-        viewModel.bellmanFord(src: from, destination: to)
-    
-        vertixColor = .green
+//        mapView.removeAnnotations(mapView.annotations)
+//        mapView.removeOverlays(mapView.overlays)
+        viewModel.findAvailablePaths(from: from, to: to)
+//        viewModel.bellmanFord(src: from, destination: to)
     }
     
     
@@ -119,6 +118,10 @@ class ViewController: UIViewController {
 
 // MARK: - ViewDelegate
 extension ViewController: ViewDelegate {
+    func didChangeEdgeColor(_ color: UIColor) {
+        pathColor = color
+    }
+    
     func didGetNewVertix(_ vertix: MapVertix) {
         drawVertix(vertix)
     }
@@ -167,6 +170,7 @@ extension ViewController: MKMapViewDelegate {
             polylineRender.alpha = pathAplpha
             return polylineRender
         }
+        
         return MKOverlayRenderer(overlay: overlay)
     }
     

@@ -19,6 +19,7 @@
 		D1A58C432559E13F00D9D99D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C412559E13F00D9D99D /* Main.storyboard */; };
 		D1A58C452559E14700D9D99D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C442559E14700D9D99D /* Assets.xcassets */; };
 		D1A58C482559E14700D9D99D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1A58C462559E14700D9D99D /* LaunchScreen.storyboard */; };
+		F503684225813AD400A7C851 /* CustomPolyline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F503684125813AD400A7C851 /* CustomPolyline.swift */; };
 		F55A03302566BF8100DF94FB /* VertixAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55A032F2566BF8100DF94FB /* VertixAnnotation.swift */; };
 		F58F1B00258106D70001A09E /* WeightedGraph+bellmanFord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58F1AFF258106D70001A09E /* WeightedGraph+bellmanFord.swift */; };
 		F59EF6C32565906200306E7E /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59EF6C22565906200306E7E /* FileManager.swift */; };
@@ -44,6 +45,7 @@
 		D1A58C442559E14700D9D99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D1A58C472559E14700D9D99D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D1A58C492559E14700D9D99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F503684125813AD400A7C851 /* CustomPolyline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPolyline.swift; sourceTree = "<group>"; };
 		F55A032F2566BF8100DF94FB /* VertixAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VertixAnnotation.swift; sourceTree = "<group>"; };
 		F58F1AFF258106D70001A09E /* WeightedGraph+bellmanFord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeightedGraph+bellmanFord.swift"; sourceTree = "<group>"; };
 		F59EF6C22565906200306E7E /* FileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 			children = (
 				F5C487742562F370003D1075 /* CustomAnnotationView.swift */,
 				F55A032F2566BF8100DF94FB /* VertixAnnotation.swift */,
+				F503684125813AD400A7C851 /* CustomPolyline.swift */,
 			);
 			path = Annotation;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				F5C487752562F370003D1075 /* CustomAnnotationView.swift in Sources */,
 				D1A58C3E2559E13F00D9D99D /* SceneDelegate.swift in Sources */,
 				D168CC3B257E249700779286 /* ViewDelegate.swift in Sources */,
+				F503684225813AD400A7C851 /* CustomPolyline.swift in Sources */,
 				F5A5855725812C9E0053D55E /* MapPath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

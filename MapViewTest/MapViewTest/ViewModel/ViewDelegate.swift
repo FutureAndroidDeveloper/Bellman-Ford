@@ -6,9 +6,10 @@
 //  Copyright © 2020 Kirill Klimenkov. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol ViewDelegate: class {
     func didGetNewVertix(_ vertix: MapVertix)
     func didGetNewEdge(_ edge: MapEdge)
+    func didChangeEdgeColor(_ color: UIColor)
 }
