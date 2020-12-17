@@ -10,9 +10,20 @@ import UIKit
 import MapKit
 
 class ViewController: UIViewController {
+
+    private struct Constants {
+        static let doneButton = "Done"
+        static let closeButton = "Close"
+    }
+    
     @IBOutlet private weak var mapView: MKMapView!
+    @IBOutlet private weak var fromVertixTextField: UITextField!
+    @IBOutlet private weak var toVertixTextField: UITextField!
+    
     private var lpgr: UILongPressGestureRecognizer!
-        
+    private var selectedTextFiled: UITextField?
+    private let picker = UIPickerView()
+    private var toolBar = UIToolbar()
     private var viewModel = ViewModel()
     
     private var activeVertix: MapVertix?
@@ -21,21 +32,19 @@ class ViewController: UIViewController {
     var pathColor: UIColor = .red
     var pathAplpha: CGFloat = 1
     
-    var isSelectingMode = false
     var vertixColor = UIColor.blue
     
-    var mapPath: MapPath?
     var selectedAnnotations: [MapVertix] = []
     
-    let startColor: UIColor = .red
-    var startVertix: MapVertix?
-    
-    let endColor: UIColor = .green
-    var endVertix: MapVertix?
+    private var startVertix: MapVertix?
+    private var endVertix: MapVertix?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setMapview()
+        setupView()
+        fromVertixTextField.tag = 1337
+        toVertixTextField.tag = 999
     }
     
     private func setMapview() {
@@ -51,6 +60,16 @@ class ViewController: UIViewController {
         
         mapView.delegate = self
         mapView.addGestureRecognizer(lpgr)
+    }
+    
+    private func setupView() {
+        fromVertixTextField.delegate = self
+        toVertixTextField.delegate = self
+        picker.delegate = self
+        picker.dataSource = self
+        setupToolBar()
+        setPickerView(for: fromVertixTextField)
+        setPickerView(for: toVertixTextField)
     }
     
     private func addAnnotation(on coordinate: CLLocationCoordinate2D) {
@@ -89,19 +108,59 @@ class ViewController: UIViewController {
         mapView.addOverlay(line)
     }
     
+    private func setPickerView(for textField: UITextField) {
+        textField.inputView = picker
+        textField.inputAccessoryView = toolBar
+    }
+    
+    private func setupToolBar() {
+        toolBar.barStyle = .default
+        toolBar.tintColor = .systemBlue
+        toolBar.isUserInteractionEnabled = true
+        toolBar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(title: Constants.doneButton,
+                                         style: .done,
+                                         target: self,
+                                         action: #selector(self.donePicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let closeButton = UIBarButtonItem(title: Constants.closeButton,
+                                         style: .done,
+                                         target: self,
+                                         action: #selector(self.closePicker))
+        toolBar.setItems([closeButton, spaceButton, doneButton], animated: true)
+    }
+    
+    @objc private func donePicker() {
+        let selectedIndex = picker.selectedRow(inComponent: 0)
+        let title = pickerView(self.picker, titleForRow: selectedIndex, forComponent: 0)
+
+        if selectedTextFiled?.tag == 1337 {
+            startVertix = viewModel.vertix(by: selectedIndex)
+        } else if selectedTextFiled?.tag == 999 {
+            endVertix = viewModel.vertix(by: selectedIndex)
+        }
+        selectedTextFiled?.text = title
+        selectedTextFiled?.resignFirstResponder()
+    }
+    
+    @objc private func closePicker() {
+        selectedTextFiled?.resignFirstResponder()
+    }
+    
     // MARK: - IBAction
     @IBAction func findPathTapped(_ sender: Any) {
         guard let from = startVertix, let to = endVertix else {
-            if !isSelectingMode {
-                mapView.selectedAnnotations.forEach { mapView.deselectAnnotation($0, animated: true) }
-            }
-            isSelectingMode = true
             return
         }
+//        mapView.selectedAnnotations.forEach { mapView.deselectAnnotation($0, animated: true) }
 //        mapView.removeAnnotations(mapView.annotations)
 //        mapView.removeOverlays(mapView.overlays)
-        viewModel.findAvailablePaths(from: from, to: to)
-//        viewModel.bellmanFord(src: from, destination: to)
+        
+        print("from: \(from)")
+        print("to: \(to)")
+        
+        viewModel.bellmanFord(src: from, destination: to)
     }
     
     
@@ -159,6 +218,27 @@ extension ViewController: UIGestureRecognizerDelegate {
     }
 }
 
+// MARK: - UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate
+extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return viewModel.vertixCount
+    }
+    
+    func pickerView( _ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return viewModel.title(of: row)
+    }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        picker.reloadAllComponents()
+        selectedTextFiled = textField
+        return true
+    }
+}
+
 // MARK: - MKMapViewDelegate
 extension ViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -181,16 +261,6 @@ extension ViewController: MKMapViewDelegate {
                 return
         }
         activeVertix = annotation.vertix
-        
-        if isSelectingMode {
-            if let _ = startVertix {
-                endVertix = annotation.vertix
-                view.color = endColor
-            } else {
-                startVertix = annotation.vertix
-                view.color = startColor
-            }
-        }
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {

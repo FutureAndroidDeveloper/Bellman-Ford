@@ -16,7 +16,7 @@ public extension WeightedGraph {
     func bellmanFord(source: Int, destination: Int) -> GraphPathDict {
         var pathDict: GraphPathDict = GraphPathDict()
         
-        // init distances from src to all other vertices  as INFINITY
+        // init distances from src to all other vertices as INFINITY
         var distance = vertices.map { _ in Double.infinity }
         distance[source] = 0
         

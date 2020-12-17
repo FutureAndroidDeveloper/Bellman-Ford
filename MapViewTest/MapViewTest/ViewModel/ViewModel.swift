@@ -15,6 +15,24 @@ class ViewModel {
     private var index: Int = 0
     private var graph = WeightedGraph<MapVertix, Double>()
     
+    // Создать массив для хранения путей
+    private var path = [MapVertix]()
+    
+    var vertixCount: Int {
+        return graph.vertexCount
+    }
+    
+    func title(of vertixNumber: Int) -> String? {
+        guard let vertix = graph.vertices.first(where: { $0.number == vertixNumber }) else {
+            return "UNKNOWN VERTIX with number: \(vertixNumber)"
+        }
+        return "\(vertix.number)"
+    }
+    
+    func vertix(by number: Int) -> MapVertix? {
+        return graph.vertices.first(where: { $0.number == number })
+    }
+    
     func createVertix(on coordinate: CLLocationCoordinate2D) -> MapVertix {
         let newVertix = MapVertix(number: index, coordinate: coordinate)
         let vertixIndex = graph.addVertex(newVertix)
@@ -37,54 +55,6 @@ class ViewModel {
         graph.addEdge(edge, directed: false)
         return mapEdge
     }
-    
-    func findAvailablePaths(from: MapVertix, to: MapVertix) {
-        let paths = findAllPaths(from, to)
-        viewDelegate?.didChangeEdgeColor(.blue)
-        paths.forEach(showPath(_:))
-    }
-        
-    // Создать массив для хранения путей
-    var path = [MapVertix]()
-    
-    // Печатает все пути от 's' до 'd'
-    private func findAllPaths(_ from: MapVertix, _ to: MapVertix) -> [[WeightedEdge<Double>]] {
-        // Отметить все вершины как не посещенные
-        var visited = [Int: Bool]()
-        graph.vertices.forEach { visited[$0.number] = false }
-        
-        // Рекурсивный вызов вспомогательной функции поиска всех путей
-        printAllPathsUtil(u: from, d: to, visited: &visited) { newVertixPath in
-            // create edge and draw it
-            WeightedEdge<Double>.init(u: <#T##Int#>, v: <#T##Int#>, directed: false, weight: <#T##Double#>)
-        }
-    }
-    
-    private func printAllPathsUtil(u: MapVertix, d: MapVertix, visited: inout [Int: Bool], didFind: (([MapVertix]) -> Void)) {
-        // Пометить текущий узел как посещенный и сохранить в path
-        visited[graph.indexOfVertex(u)!] = true
-        path.append(u)
-
-        // Если текущая вершина совпадает с точкой назначения, то
-        // print(current path[])
-        if u == d {
-            didFind(path)
-        } else {
-            // Если текущая вершина не является пунктом назначения
-            // Повторить для всех вершин, смежных с этой вершиной
-            for vertix in graph.neighborsForVertex(u)! {
-                if !visited[graph.indexOfVertex(vertix)!]! {
-                    printAllPathsUtil(u: vertix, d: d)
-                }
-            }
-        }
-
-        // Удалить текущую вершину из path[] и пометить ее как непосещенную
-        path.removeLast()
-//        path.pop()
-        visited[graph.indexOfVertex(u)!] = false
-    }
-
     
     func loadGraphFromFile() {
         let fileManager = DiskGraphFileManager<WeightedGraph<MapVertix, Double>>()
@@ -130,9 +100,8 @@ class ViewModel {
         path.forEach { edge in
             let start = graph.vertexAtIndex(edge.u)
             let end = graph.vertexAtIndex(edge.v)
-            let mapEdge = MapEdge(startCoordinate: start.coordinate,
-                                  endCoordinate: end.coordinate,
-                                  weight: edge.weight)
+            let mapEdge = createEdge(from: start, to: end)
+            
             self.viewDelegate?.didGetNewVertix(start)
             self.viewDelegate?.didGetNewVertix(end)
             self.viewDelegate?.didGetNewEdge(mapEdge)
